@@ -31,7 +31,7 @@ class SLAMValidation : public rclcpp::Node {
                                                             eufs_msgs::msg::CarState>>(cone_sub, vehicle_state_sub, 3);
       sync_->registerCallback(std::bind(&SLAMValidation::topic_callback, this, _1, _2));
     }
-
+ 
     void run_slam(const eufs_msgs::msg::ConeArrayWithCovariance::SharedPtr cone_data, 
                   const eufs_msgs::msg::CarState::SharedPtr vehicle_state_data) const {
       RCLCPP_INFO(this->get_logger(), 
