@@ -7,6 +7,7 @@
 #include "msg/points.hpp"
 #include "generator.hpp"
 #include "frenet.hpp"
+#include "runpy.hpp"
 
 using std::placeholders::_1;
 #define DELTA 0.5
@@ -54,8 +55,8 @@ class MidpointNode : public rclcpp::Node
       }
 
       Spline spline = generator_mid.spline_from_cones(perception_data);
-      Spline spline_left = generator_left.spline_from_cone_side(perception_data.bluecones);
-      Spline spline_right = generator_right.spline_from_cone_side(perception_data.yellowcones);
+      Spline spline_left = generator_left.spline_from_curve(perception_data.bluecones);
+      Spline spline_right = generator_right.spline_from_curve(perception_data.yellowcones);
 
 
       std::vector<double> rcl_pt_x,rcl_pt_y,rcl_pt_wr, rcl_pt_wl;
@@ -77,12 +78,12 @@ class MidpointNode : public rclcpp::Node
       }
 
 
-      auto message  = interfaces::msg::OptimizerPoints();
-      message.x = rcl_pt_x;
-      message.y = rcl_pt_y;
-      message.wl = rcl_pt_wl;
-      message.wr = rcl_pt_wr;
-      publisher_rcl_pt->publish(message);
+      // auto message  = interfaces::msg::OptimizerPoints();
+      // message.x = rcl_pt_x;
+      // message.y = rcl_pt_y;
+      // message.wl = rcl_pt_wl;
+      // message.wr = rcl_pt_wr;
+      // publisher_rcl_pt->publish(message);
 
     }
 

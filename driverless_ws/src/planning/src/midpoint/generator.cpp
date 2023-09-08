@@ -129,7 +129,7 @@ gsl_matrix* vector_to_mat(std::vector<std::pair<double,double>> side){
     return mat;
 }
 
-Spline MidpointGenerator::spline_from_cone_side(std::vector<std::pair<double,double>> side){
+Spline MidpointGenerator::spline_from_curve(std::vector<std::pair<double,double>> side){
 
     gsl_matrix *side_mat= vector_to_mat(side);
     std::vector<Spline> splines = generate_splines(side_mat);
