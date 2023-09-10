@@ -26,10 +26,6 @@ find_package(GSL REQUIRED)
 #ament_target_dependencies(slam_test rclcpp message_filters eufs_msgs)
 #ament_export_include_directories(source)
 
-add_executable(frenet_test src/raceline/frenet.cpp)
-ament_target_dependencies(frenet_test rclcpp)
-ament_export_include_directories(source)
-
 # Temporary fix to compile raceline
 add_library(frenet_test src/raceline/frenet.cpp src/raceline/raceline.cpp)
 ament_target_dependencies(frenet_test rclcpp)
