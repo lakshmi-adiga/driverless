@@ -28,6 +28,7 @@ find_package(GSL REQUIRED)
 
 # Temporary fix to compile raceline
 add_library(frenet_test src/raceline/frenet.cpp src/raceline/raceline.cpp)
+add_library(midpoint_test src/midpoint/generator.cpp src/raceline/raceline.cpp)
 ament_target_dependencies(frenet_test rclcpp)
 ament_export_include_directories(src)
 
