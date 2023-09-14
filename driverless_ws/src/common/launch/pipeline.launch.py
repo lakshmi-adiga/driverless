@@ -12,37 +12,33 @@ from ament_index_python import get_package_share_directory
 def generate_launch_description():
     ld = LaunchDescription()
     
-    velodyne = Node(
-        package='perceptions',
-        executable='stereo_vision'
+    stereo_mode = Node(
+        package='stereo',
+        executable='stereo_cones'
     )
 
-    zed = Node(
-        package='perceptions',
-        executable='lidar'
+    lidar_node = Node(
+        package='lidar',
+        executable='lidar_sub'
     )
 
-    lidar = Node(
-        package='perceptions',
-        executable='lidar'
+    velodyne = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            os.path.join(get_package_share_directory('velodyne'),
+                         'velodyne-all-nodes-VLP16-launch.py')
+        )
     )
 
-    stereo = Node(
-        package='perceptions',
-        executable='stereo_vision'
+    zed = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            os.path.join(get_package_share_directory('zed_wrapper'),
+                         'zed2.launch.py')
+        )
     )
 
-    midline = Node(
-        package='planning',
-        executable='midline'
-    )
-
-    ld.add_action(data_collection)
-    ld.add_action(data_collection)
-    ld.add_action(lidar)
-    ld.add_action(stereo)
-    ld.add_action(midline)
-
-
+    ld.add_action(stereo_mode)
+    ld.add_action(lidar_node)
+    ld.add_action(velodyne)
+    ld.add_action(zed)
 
     return ld
