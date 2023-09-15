@@ -15,6 +15,8 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
+SET(ENV{PYTHONPATH} "/opt/ros/foxy/lib/python3.8/site-packages/")
+SET(CMAKE_PREFIX_PATH "${CMAKE_PREFIX_PATH} ~/workspace/driverless/driverless_ws/install;/opt/ros/foxy")
 # find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
@@ -27,18 +29,23 @@ find_package(GSL REQUIRED)
 #ament_export_include_directories(source)
 
 # Temporary fix to compile raceline
-add_library(frenet_test src/raceline/frenet.cpp src/raceline/raceline.cpp)
-ament_target_dependencies(frenet_test rclcpp)
-ament_export_include_directories(src)
+# add_library(frenet_test src/planning_codebase/raceline/frenet.cpp src/planning_codebase/raceline/raceline.cpp)
+# ament_target_dependencies(frenet_test rclcpp)
+# ament_export_include_directories(src)
+# target_link_libraries(frenet_test GSL::gsl GSL::gslcblas)
 
-target_link_libraries(frenet_test GSL::gsl GSL::gslcblas)
+add_executable(midline src/planning_codebase/midpoint/generator.cpp)
+ament_target_dependencies(midline rclcpp std_msgs GSL interfaces)
+target_include_directories(midline PRIVATE AFTER ${PROJECT_SOURCE_DIR}/..)
+target_link_libraries(midline GSL::gsl GSL::gslcblas)
 
 #install(TARGETS
 #  slam_test
 #  DESTINATION lib/${PROJECT_NAME})
 
 install(TARGETS
-	frenet_test
+	# frenet_test
+  midline
 	DESTINATION lib/${PROJECT_NAME})
 
 ament_environment_hooks()
