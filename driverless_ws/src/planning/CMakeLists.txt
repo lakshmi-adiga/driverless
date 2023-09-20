@@ -21,6 +21,7 @@ find_package(rclcpp REQUIRED)
 find_package(message_filters REQUIRED)
 find_package(eufs_msgs REQUIRED)
 find_package(GSL REQUIRED)
+find_package(interfaces REQUIRED)
 # find_package(Python3 REQUIRED COMPONENTS Interpreter Development)
 
 
@@ -30,6 +31,7 @@ find_package(GSL REQUIRED)
 
 # Temporary fix to compile raceline
 add_library(frenet_test src/raceline/frenet.cpp src/raceline/raceline.cpp)
+# add_executable(midpoint_test src/midpoint/generator.cpp src/raceline/raceline.cpp)
 add_executable(midpoint_test src/midpoint.cpp src/midpoint/generator.cpp src/raceline/raceline.cpp)
 # add_library(optimizer_test src/midpoint/generator.cpp src/raceline/optimizer/runpy.cpp)
 ament_target_dependencies(frenet_test rclcpp)
@@ -39,6 +41,7 @@ ament_export_include_directories(src)
 
 # target_link_libraries(optimizer_test Python3::Python)
 target_link_libraries(frenet_test GSL::gsl GSL::gslcblas)
+target_link_libraries(midpoint_test rclcpp std_msgs GSL interfaces)
 
 #install(TARGETS
 #  slam_test
