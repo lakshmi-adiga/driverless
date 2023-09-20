@@ -1,8 +1,8 @@
 #include <memory>
-#include "rclcpp.hpp"
+#include "rclcpp/rclcpp.hpp"
 #include "std_msgs/msg/string.hpp"
 #include "std_msgs/msg/int8.hpp"
-#include "msg/optimizer_points.hpp"
+// #include "msg/optimizer_points.hpp"
 #include "msg/cone_list.hpp"
 #include "msg/points.hpp"
 #include "generator.hpp"
@@ -55,27 +55,33 @@ class MidpointNode : public rclcpp::Node
       }
 
       Spline spline = generator_mid.spline_from_cones(perception_data);
+      
+      
+      
       // Spline spline_left = generator_left.spline_from_curve(perception_data.bluecones);
       // Spline spline_right = generator_right.spline_from_curve(perception_data.yellowcones);
 
 
-      std::vector<double> rcl_pt_x,rcl_pt_y,rcl_pt_wr, rcl_pt_wl;
-      double x,y,wl,wr,rptr,lptr;
+      // WILL BE USED WHEN OPTIMIZER STARTS
 
-      for(int i =0;i<generator_mid.cumulated_splines.size();i++){
-        auto e = generator_mid.cumulated_splines[i];
 
-        for(int j=0;j<e.get_points()->size2-1;j++){
-          x=gsl_matrix_get(e.get_points(),0,j);
-          y=gsl_matrix_get(e.get_points(),1,j);
-          double len=0; 
-          if (i>0) len = generator_mid.cumulated_lengths[i-1];
+      // std::vector<double> rcl_pt_x,rcl_pt_y,rcl_pt_wr, rcl_pt_wl;
+      // double x,y,wl,wr,rptr,lptr;
 
-          wl = frenet(x,y,generator_left.cumulated_splines,generator_left.cumulated_lengths,generator_mid.cumulated_lengths[i-1]).min_distance;
-          wr = frenet(x,y,generator_right.cumulated_splines,generator_right.cumulated_lengths,generator_mid.cumulated_lengths[i-1]).min_distance;
+      // for(int i =0;i<generator_mid.cumulated_splines.size();i++){
+      //   auto e = generator_mid.cumulated_splines[i];
 
-        }
-      }
+      //   for(int j=0;j<e.get_points()->size2-1;j++){
+      //     x=gsl_matrix_get(e.get_points(),0,j);
+      //     y=gsl_matrix_get(e.get_points(),1,j);
+      //     double len=0; 
+      //     if (i>0) len = generator_mid.cumulated_lengths[i-1];
+
+      //     wl = frenet(x,y,generator_left.cumulated_splines,generator_left.cumulated_lengths,generator_mid.cumulated_lengths[i-1]).min_distance;
+      //     wr = frenet(x,y,generator_right.cumulated_splines,generator_right.cumulated_lengths,generator_mid.cumulated_lengths[i-1]).min_distance;
+
+      //   }
+      // }
 
 
       // auto message  = interfaces::msg::OptimizerPoints();
@@ -93,7 +99,7 @@ class MidpointNode : public rclcpp::Node
 
     rclcpp::Subscription<interfaces::msg::ConeList>::SharedPtr subscription_cones;
     rclcpp::Subscription<std_msgs::msg::String>::SharedPtr subscription_lap_num;
-    rclcpp::Publisher<std_msgs::msg::String>::SharedPtr publisher_rcl_pt;
+    // rclcpp::Publisher<std_msgs::msg::String>::SharedPtr publisher_rcl_pt;
 
     int LOOKAHEAD_NEAR = 2;
     int LOOKAHEAD_FAR = 3;
@@ -110,7 +116,7 @@ class MidpointNode : public rclcpp::Node
     {
       subscription_cones = this->create_subscription<interfaces::msg::ConeList>("/stereo_cones", 10, std::bind(&MidpointNode::cones_callback, this, _1));
       subscription_lap_num = this->create_subscription<std_msgs::msg::String>("/lap_num", 10, std::bind(&MidpointNode::lap_callback, this, _1));
-      publisher_rcl_pt = this->create_publisher<interfaces::msg::OptimizerPoints>("/raceline_points",10);
+      // publisher_rcl_pt = this->create_publisher<interfaces::msg::Points>("/midpoint_points",10);
       //     rclcpp::TimerBase::SharedPtr  timer_ = this->create_wall_timer(
       // 500ms, std::bind(&MinimalPublisher::timer_callback, this));
       generator_mid = MidpointGenerator(10);
@@ -120,3 +126,10 @@ class MidpointNode : public rclcpp::Node
     }
 };
 
+int main(int argc, char * argv[])
+{
+  rclcpp::init(argc, argv);
+  rclcpp::spin(std::make_shared<MidpointNode>());
+  rclcpp::shutdown();
+  return 0;
+}
