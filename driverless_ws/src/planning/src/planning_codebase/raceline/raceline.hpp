@@ -102,8 +102,6 @@ public:
     ~Spline();
 };
 
-
-
 gsl_matrix *interpolate(Spline spline,int number, std::pair<float,float> bounds = std::make_pair(-1,-1));
 
 gsl_matrix* rotation_matrix_gen(gsl_matrix *pnts);
