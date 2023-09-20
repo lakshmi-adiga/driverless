@@ -1,5 +1,5 @@
 #include <memory>
-#include "rclcpp/rclcpp.hpp"
+#include "rclcpp.hpp"
 #include "std_msgs/msg/string.hpp"
 #include "std_msgs/msg/int8.hpp"
 #include "msg/optimizer_points.hpp"
@@ -7,7 +7,7 @@
 #include "msg/points.hpp"
 #include "generator.hpp"
 #include "frenet.hpp"
-#include "runpy.hpp"
+// #include "runpy.hpp"
 
 using std::placeholders::_1;
 #define DELTA 0.5
@@ -55,8 +55,8 @@ class MidpointNode : public rclcpp::Node
       }
 
       Spline spline = generator_mid.spline_from_cones(perception_data);
-      Spline spline_left = generator_left.spline_from_curve(perception_data.bluecones);
-      Spline spline_right = generator_right.spline_from_curve(perception_data.yellowcones);
+      // Spline spline_left = generator_left.spline_from_curve(perception_data.bluecones);
+      // Spline spline_right = generator_right.spline_from_curve(perception_data.yellowcones);
 
 
       std::vector<double> rcl_pt_x,rcl_pt_y,rcl_pt_wr, rcl_pt_wl;

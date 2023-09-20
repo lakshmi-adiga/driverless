@@ -21,7 +21,7 @@ find_package(rclcpp REQUIRED)
 find_package(message_filters REQUIRED)
 find_package(eufs_msgs REQUIRED)
 find_package(GSL REQUIRED)
-find_package(Python3 REQUIRED COMPONENTS Interpreter Development)
+# find_package(Python3 REQUIRED COMPONENTS Interpreter Development)
 
 
 #add_executable(slam_test src/planning_codebase/EKF_SLAM.cpp)
@@ -30,13 +30,13 @@ find_package(Python3 REQUIRED COMPONENTS Interpreter Development)
 
 # Temporary fix to compile raceline
 add_library(frenet_test src/raceline/frenet.cpp src/raceline/raceline.cpp)
-add_library(midpoint_test src/midpoint/generator.cpp src/raceline/raceline.cpp)
-add_library(optimizer_test src/midpoint/generator.cpp src/raceline/optimizer/runpy.cpp)
+add_library(midpoint_test src/midpoint/generator.cpp src/raceline/raceline.cpp src/midpoint.cpp)
+# add_library(optimizer_test src/midpoint/generator.cpp src/raceline/optimizer/runpy.cpp)
 ament_target_dependencies(frenet_test rclcpp)
 ament_export_include_directories(src)
-target_include_directories(optimizer_test PRIVATE /usr/include/)
+# target_include_directories(optimizer_test PRIVATE /usr/include/)
 
-target_link_libraries(optimizer_test Python3::Python)
+# target_link_libraries(optimizer_test Python3::Python)
 target_link_libraries(frenet_test GSL::gsl GSL::gslcblas)
 
 #install(TARGETS
@@ -47,9 +47,10 @@ install(TARGETS
 	frenet_test
 	DESTINATION lib/${PROJECT_NAME})
 
-install(TARGETS
-	optimizer_test
-	DESTINATION lib/${PROJECT_NAME})
+# install(TARGETS
+# 	optimizer_test
+# 	DESTINATION lib/${PROJECT_NAME})
 
 ament_environment_hooks()
 ament_package()
+
