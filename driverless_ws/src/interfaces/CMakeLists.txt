@@ -21,6 +21,7 @@ find_package(ament_cmake REQUIRED)
 # further dependencies manually.
 # find_package(<dependency> REQUIRED)
 
+
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
   # the following line skips the linter which checks for copyrights
@@ -48,6 +49,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/SplineList.msg"
   DEPENDENCIES geometry_msgs sensor_msgs # Add packages that above messages depend on, in this case geometry_msgs for Sphere.msg
 )
+
+ament_export_dependencies(rosidl_default_runtime)
+
 ament_package()
-
-
