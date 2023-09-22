@@ -21,6 +21,21 @@ struct raceline_pt{
 class MidpointNode : public rclcpp::Node
 {
   private:
+    perceptionsData perception_data;
+
+    rclcpp::Subscription<eufs_msgs::msg::ConeArray>::SharedPtr subscription_cones;
+    // rclcpp::Subscription<std_msgs::msg::String>::SharedPtr subscription_lap_num;
+    rclcpp::Publisher<eufs_msgs::msg::PointArray>::SharedPtr publisher_rcl_pt;
+
+    static const int LOOKAHEAD_NEAR = 2;
+    static const int LOOKAHEAD_FAR = 3;
+    std::vector<double> vis_lookaheads;
+    int lap = 1;
+    bool vis_spline = true;
+    MidpointGenerator generator_mid;
+    MidpointGenerator generator_left;
+    MidpointGenerator generator_right;
+
     void lap_callback(const std_msgs::msg::Int8::SharedPtr msg) 
     {
       lap=msg->data;
@@ -48,60 +63,42 @@ class MidpointNode : public rclcpp::Node
         perception_data.yellowcones.emplace_back(e.x, e.y);
       }
 
-      if((perception_data.yellowcones.size()==0 or perception_data.bluecones.size()==0) && perception_data.orangecones.size()<2){
-        return;
-      }
-
-      Spline spline = generator_mid.spline_from_cones(perception_data);
+      //TODO: shouldn't return a spline
+      generator_mid.spline_from_cones(perception_data);
       
-      
-      
+    
       // Spline spline_left = generator_left.spline_from_curve(perception_data.bluecones);
       // Spline spline_right = generator_right.spline_from_curve(perception_data.yellowcones);
 
 
       // WILL BE USED WHEN OPTIMIZER STARTS
-      std::vector<double> rcl_pt_x,rcl_pt_y,rcl_pt_wr, rcl_pt_wl;
+      std::vector<double> rcl_pt_x,rcl_pt_y;//,rcl_pt_wr, rcl_pt_wl;
       double x,y;//,wl,wr,rptr,lptr;
       eufs_msgs::msg::PointArray message  = eufs_msgs::msg::PointArray();
       std::vector<geometry_msgs::msg::Point> Points;
 
-
-      for(int i =0;i<generator_mid.cumulated_splines.size();i++){
-        auto e = generator_mid.cumulated_splines[i];
-
-        for(int j=0;j<e.get_points()->size2-1;j++){
-          x=gsl_matrix_get(e.get_points(),0,j);
-          y=gsl_matrix_get(e.get_points(),1,j);
-          double len=0; 
-          if (i>0) len = generator_mid.cumulated_lengths[i-1];
+      //
+      for(unsigned int i =0;i<generator_mid.cumulated_splines.size();i++){
+        auto spline = generator_mid.cumulated_splines[i];
+        //TODO:create a typedef, but size2 is the num of rows
+        for(unsigned int j=0;j<spline.get_points()->size2-1;j++){
+          x=gsl_matrix_get(spline.get_points(),0,j);
+          y=gsl_matrix_get(spline.get_points(),1,j);
+          // double len=0; 
+          // if (i>0) len = generator_mid.cumulated_lengths[i-1];
           geometry_msgs::msg::Point tmpPoint;
           tmpPoint.x=x;
           tmpPoint.y=y;
           Points.push_back(tmpPoint);
           // wl = frenet(x,y,generator_left.cumulated_splines,generator_left.cumulated_lengths,generator_mid.cumulated_lengths[i-1]).min_distance;
           // wr = frenet(x,y,generator_right.cumulated_splines,generator_right.cumulated_lengths,generator_mid.cumulated_lengths[i-1]).min_distance;
-
         }
       }
       message.set__points(Points);
       publisher_rcl_pt->publish(message);
     }
 
-    perceptionsData perception_data;
 
-    rclcpp::Subscription<eufs_msgs::msg::ConeArray>::SharedPtr subscription_cones;
-    // rclcpp::Subscription<std_msgs::msg::String>::SharedPtr subscription_lap_num;
-    rclcpp::Publisher<eufs_msgs::msg::PointArray>::SharedPtr publisher_rcl_pt;
-
-    int LOOKAHEAD_NEAR = 2;
-    int LOOKAHEAD_FAR = 3;
-    std::vector<double> vis_lookaheads;
-    int lap = 1;
-    bool vis_spline = true;
-    MidpointGenerator generator_mid;
-    MidpointGenerator generator_left;
-    MidpointGenerator generator_right;
     
   public:
     MidpointNode()
