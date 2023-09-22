@@ -61,10 +61,8 @@ class MidpointNode : public rclcpp::Node
 
 
       // WILL BE USED WHEN OPTIMIZER STARTS
-
-
       std::vector<double> rcl_pt_x,rcl_pt_y,rcl_pt_wr, rcl_pt_wl;
-      double x,y,wl,wr,rptr,lptr;
+      double x,y;//,wl,wr,rptr,lptr;
       eufs_msgs::msg::PointArray message  = eufs_msgs::msg::PointArray();
       std::vector<geometry_msgs::msg::Point> Points;
 
@@ -88,16 +86,13 @@ class MidpointNode : public rclcpp::Node
       }
       message.set__points(Points);
       publisher_rcl_pt->publish(message);
-
     }
-
-
 
     perceptionsData perception_data;
 
     rclcpp::Subscription<eufs_msgs::msg::ConeArray>::SharedPtr subscription_cones;
     // rclcpp::Subscription<std_msgs::msg::String>::SharedPtr subscription_lap_num;
-    rclcpp::Publisher<std_msgs::msg::String>::SharedPtr publisher_rcl_pt;
+    rclcpp::Publisher<eufs_msgs::msg::PointArray>::SharedPtr publisher_rcl_pt;
 
     int LOOKAHEAD_NEAR = 2;
     int LOOKAHEAD_FAR = 3;
@@ -115,6 +110,7 @@ class MidpointNode : public rclcpp::Node
       subscription_cones = this->create_subscription<eufs_msgs::msg::ConeArray>("/stereo_cones", 10, std::bind(&MidpointNode::cones_callback, this, _1));
       // subscription_lap_num = this->create_subscription<std_msgs::msg::String>("/lap_num", 10, std::bind(&MidpointNode::lap_callback, this, _1));
       publisher_rcl_pt = this->create_publisher<eufs_msgs::msg::PointArray>("/midpoint_points",10);
+      // publisher_rcl_pt = this->create_publisher<std_msgs::msg::String>("/midpoint_points",10);
       //     rclcpp::TimerBase::SharedPtr  timer_ = this->create_wall_timer(
       // 500ms, std::bind(&MinimalPublisher::timer_callback, this));
       generator_mid = MidpointGenerator(10);
