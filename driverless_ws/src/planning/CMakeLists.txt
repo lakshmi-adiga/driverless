@@ -13,11 +13,12 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
+find_package(geometry_msgs REQUIRED)
 find_package(eufs_msgs REQUIRED)
 find_package(GSL REQUIRED)
 
 add_executable(midpoint_test src/midpoint.cpp src/generator.cpp src/raceline/raceline.cpp)
-ament_target_dependencies(midpoint_test rclcpp std_msgs eufs_msgs GSL)
+ament_target_dependencies(midpoint_test rclcpp std_msgs eufs_msgs geometry_msgs GSL)
 
 install(TARGETS
   midpoint_test

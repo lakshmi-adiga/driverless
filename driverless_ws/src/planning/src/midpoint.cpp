@@ -2,8 +2,10 @@
 #include "rclcpp/rclcpp.hpp"
 #include "std_msgs/msg/string.hpp"
 #include "std_msgs/msg/int8.hpp"
+#include "geometry_msgs/msg/point.hpp"
 // #include "msg/optimizer_points.hpp"
 #include "eufs_msgs/msg/cone_array.hpp"
+#include "eufs_msgs/msg/point_array.hpp"
 // #include "interfaces/msg/cone_list.hpp"
 // #include "interfaces/msg/points.hpp"
 #include "generator.hpp"
@@ -61,31 +63,31 @@ class MidpointNode : public rclcpp::Node
       // WILL BE USED WHEN OPTIMIZER STARTS
 
 
-      // std::vector<double> rcl_pt_x,rcl_pt_y,rcl_pt_wr, rcl_pt_wl;
-      // double x,y,wl,wr,rptr,lptr;
-
-      // for(int i =0;i<generator_mid.cumulated_splines.size();i++){
-      //   auto e = generator_mid.cumulated_splines[i];
-
-      //   for(int j=0;j<e.get_points()->size2-1;j++){
-      //     x=gsl_matrix_get(e.get_points(),0,j);
-      //     y=gsl_matrix_get(e.get_points(),1,j);
-      //     double len=0; 
-      //     if (i>0) len = generator_mid.cumulated_lengths[i-1];
-
-      //     wl = frenet(x,y,generator_left.cumulated_splines,generator_left.cumulated_lengths,generator_mid.cumulated_lengths[i-1]).min_distance;
-      //     wr = frenet(x,y,generator_right.cumulated_splines,generator_right.cumulated_lengths,generator_mid.cumulated_lengths[i-1]).min_distance;
-
-      //   }
-      // }
+      std::vector<double> rcl_pt_x,rcl_pt_y,rcl_pt_wr, rcl_pt_wl;
+      double x,y,wl,wr,rptr,lptr;
+      eufs_msgs::msg::PointArray message  = eufs_msgs::msg::PointArray();
+      std::vector<geometry_msgs::msg::Point> Points;
 
 
-      // auto message  = eufs_msgs::msg::OptimizerPoints();
-      // message.x = rcl_pt_x;
-      // message.y = rcl_pt_y;
-      // message.wl = rcl_pt_wl;
-    // message.wr = rcl_pt_wr;
-      // publisher_rcl_pt->publish(message);
+      for(int i =0;i<generator_mid.cumulated_splines.size();i++){
+        auto e = generator_mid.cumulated_splines[i];
+
+        for(int j=0;j<e.get_points()->size2-1;j++){
+          x=gsl_matrix_get(e.get_points(),0,j);
+          y=gsl_matrix_get(e.get_points(),1,j);
+          double len=0; 
+          if (i>0) len = generator_mid.cumulated_lengths[i-1];
+          geometry_msgs::msg::Point tmpPoint;
+          tmpPoint.x=x;
+          tmpPoint.y=y;
+          Points.push_back(tmpPoint);
+          // wl = frenet(x,y,generator_left.cumulated_splines,generator_left.cumulated_lengths,generator_mid.cumulated_lengths[i-1]).min_distance;
+          // wr = frenet(x,y,generator_right.cumulated_splines,generator_right.cumulated_lengths,generator_mid.cumulated_lengths[i-1]).min_distance;
+
+        }
+      }
+      message.set__points(Points);
+      publisher_rcl_pt->publish(message);
 
     }
 
@@ -95,7 +97,7 @@ class MidpointNode : public rclcpp::Node
 
     rclcpp::Subscription<eufs_msgs::msg::ConeArray>::SharedPtr subscription_cones;
     // rclcpp::Subscription<std_msgs::msg::String>::SharedPtr subscription_lap_num;
-    // rclcpp::Publisher<std_msgs::msg::String>::SharedPtr publisher_rcl_pt;
+    rclcpp::Publisher<std_msgs::msg::String>::SharedPtr publisher_rcl_pt;
 
     int LOOKAHEAD_NEAR = 2;
     int LOOKAHEAD_FAR = 3;
@@ -112,7 +114,7 @@ class MidpointNode : public rclcpp::Node
     {
       subscription_cones = this->create_subscription<eufs_msgs::msg::ConeArray>("/stereo_cones", 10, std::bind(&MidpointNode::cones_callback, this, _1));
       // subscription_lap_num = this->create_subscription<std_msgs::msg::String>("/lap_num", 10, std::bind(&MidpointNode::lap_callback, this, _1));
-      // publisher_rcl_pt = this->create_publisher<eufs_msgs::msg::Points>("/midpoint_points",10);
+      publisher_rcl_pt = this->create_publisher<eufs_msgs::msg::PointArray>("/midpoint_points",10);
       //     rclcpp::TimerBase::SharedPtr  timer_ = this->create_wall_timer(
       // 500ms, std::bind(&MinimalPublisher::timer_callback, this));
       generator_mid = MidpointGenerator(10);
