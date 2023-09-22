@@ -81,7 +81,7 @@ public:
     void set_sort_index(int new_sort);
     double length();
     
-    gsl_matrix *interpolate(Spline spline,int number, std::pair<float,float> bounds = std::make_pair(-1,-1));
+    // gsl_matrix *interpolate(Spline spline,int number, std::pair<float,float> bounds = std::make_pair(-1,-1));
     
     gsl_matrix *interpolate(int number,std::pair<float,float> bounds);
 

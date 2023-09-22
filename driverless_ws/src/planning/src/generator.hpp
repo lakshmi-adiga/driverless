@@ -30,7 +30,6 @@ public:
 
     MidpointGenerator(int interpolation_number=30);
 
-    ~MidpointGenerator();
     std::vector<std::pair<double,double>> sorted_by_norm(std::vector<std::pair<double,double>> inp);
     // gsl_matrix *sorted_by_norm(gsl_matrix *list);
 

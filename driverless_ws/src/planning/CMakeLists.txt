@@ -1,11 +1,6 @@
 cmake_minimum_required(VERSION 3.5)
 project(planning)
 
-# Default to C99
-if(NOT CMAKE_C_STANDARD)
-  set(CMAKE_C_STANDARD 99)
-endif()
-
 # Default to C++14
 if(NOT CMAKE_CXX_STANDARD)
   set(CMAKE_CXX_STANDARD 14)
@@ -15,48 +10,17 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
-# find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
-find_package(message_filters REQUIRED)
+find_package(std_msgs REQUIRED)
 find_package(eufs_msgs REQUIRED)
 find_package(GSL REQUIRED)
-find_package(interfaces REQUIRED)
-# find_package(Python3 REQUIRED COMPONENTS Interpreter Development)
 
-
-#add_executable(slam_test src/planning_codebase/EKF_SLAM.cpp)
-#ament_target_dependencies(slam_test rclcpp message_filters eufs_msgs)
-#ament_export_include_directories(source)
-
-# Temporary fix to compile raceline
-add_library(frenet_test src/raceline/frenet.cpp src/raceline/raceline.cpp)
-# add_executable(midpoint_test src/midpoint/generator.cpp src/raceline/raceline.cpp)
 add_executable(midpoint_test src/midpoint.cpp src/generator.cpp src/raceline/raceline.cpp)
-# add_library(optimizer_test src/midpoint/generator.cpp src/raceline/optimizer/runpy.cpp)
-ament_target_dependencies(frenet_test rclcpp)
-ament_target_dependencies(midpoint_test rclcpp std_msgs interfaces eufs_msgs)
-ament_export_include_directories(src)
-# target_include_directories(optimizer_test PRIVATE /usr/include/)
-
-# target_link_libraries(optimizer_test Python3::Python)
-target_link_libraries(frenet_test GSL::gsl GSL::gslcblas)
-target_link_libraries(midpoint_test rclcpp std_msgs GSL interfaces eufs_msgs)
-
-#install(TARGETS
-#  slam_test
-#  DESTINATION lib/${PROJECT_NAME})
+ament_target_dependencies(midpoint_test rclcpp std_msgs eufs_msgs GSL)
 
 install(TARGETS
-	frenet_test
-	DESTINATION lib/${PROJECT_NAME})
+  midpoint_test
+  DESTINATION lib/${PROJECT_NAME})
 
-install(TARGETS
-	midpoint_test
-	DESTINATION lib/${PROJECT_NAME})
-# install(TARGETS
-# 	optimizer_test
-# 	DESTINATION lib/${PROJECT_NAME})
-
-ament_environment_hooks()
 ament_package()

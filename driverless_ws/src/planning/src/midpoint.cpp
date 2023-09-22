@@ -3,7 +3,7 @@
 #include "std_msgs/msg/string.hpp"
 #include "std_msgs/msg/int8.hpp"
 // #include "msg/optimizer_points.hpp"
-#include "eufs_msgs/msg/cone_array.h"
+#include "eufs_msgs/msg/cone_array.hpp"
 // #include "interfaces/msg/cone_list.hpp"
 // #include "interfaces/msg/points.hpp"
 #include "generator.hpp"
@@ -16,17 +16,15 @@ struct raceline_pt{
   double x,y,w_l,w_r;
 };
 
-// euf
 class MidpointNode : public rclcpp::Node
 {
   private:
-    void lap_callback(const std_msgs::msg::Int8 msg) 
+    void lap_callback(const std_msgs::msg::Int8::SharedPtr msg) 
     {
       lap=msg->data;
     }
 
-    void cones_callback(const eufs_msgs::msg::ConeList msg) const
-    eufs_msgs__msg__ConeArray;
+    void cones_callback (const eufs_msgs::msg::ConeArray::SharedPtr msg)
     { 
       if (lap>1) return;
 
@@ -37,20 +35,15 @@ class MidpointNode : public rclcpp::Node
 
       for (auto e : msg->blue_cones)
       {
-        const std::pair<double, double> p = std::make_pair(e.x, e.y);
-        std::vector<std::pair<double,double>>bluecones;
-        bluecones.push_back(std::make_pair(e.x, e.y));
-        perception_data.bluecones.push_back(std::make_pair(e.x, e.y));
+        perception_data.bluecones.emplace_back(e.x, e.y);
       }      
       for (auto e : msg->orange_cones)
       {
-        const std::pair<double, double> p = std::make_pair(e.x, e.y);
-        perception_data.orangecones.push_back((std::pair<double, double>)p);
+        perception_data.orangecones.emplace_back(e.x, e.y);
       }      
       for (auto e : msg->yellow_cones)
       {
-        const std::pair<double, double> p = std::make_pair(e.x, e.y);
-        perception_data.yellowcones.push_back((std::pair<double, double>)p);
+        perception_data.yellowcones.emplace_back(e.x, e.y);
       }
 
       if((perception_data.yellowcones.size()==0 or perception_data.bluecones.size()==0) && perception_data.orangecones.size()<2){
@@ -100,7 +93,7 @@ class MidpointNode : public rclcpp::Node
 
     perceptionsData perception_data;
 
-    rclcpp::Subscription<eufs_msgs::msg::ConeList>::SharedPtr subscription_cones;
+    rclcpp::Subscription<eufs_msgs::msg::ConeArray>::SharedPtr subscription_cones;
     // rclcpp::Subscription<std_msgs::msg::String>::SharedPtr subscription_lap_num;
     // rclcpp::Publisher<std_msgs::msg::String>::SharedPtr publisher_rcl_pt;
 
@@ -117,8 +110,8 @@ class MidpointNode : public rclcpp::Node
     MidpointNode()
     : Node("midpoint")
     {
-      subscription_cones = this->create_subscription<eufs_msgs::msg::ConeList>("/stereo_cones", 10, std::bind(&MidpointNode::cones_callback, this, _1));
-      subscription_lap_num = this->create_subscription<std_msgs::msg::String>("/lap_num", 10, std::bind(&MidpointNode::lap_callback, this, _1));
+      subscription_cones = this->create_subscription<eufs_msgs::msg::ConeArray>("/stereo_cones", 10, std::bind(&MidpointNode::cones_callback, this, _1));
+      // subscription_lap_num = this->create_subscription<std_msgs::msg::String>("/lap_num", 10, std::bind(&MidpointNode::lap_callback, this, _1));
       // publisher_rcl_pt = this->create_publisher<eufs_msgs::msg::Points>("/midpoint_points",10);
       //     rclcpp::TimerBase::SharedPtr  timer_ = this->create_wall_timer(
       // 500ms, std::bind(&MinimalPublisher::timer_callback, this));
@@ -128,8 +121,6 @@ class MidpointNode : public rclcpp::Node
       // VIS LOOKAHEADS
     }
 };
-
-eufs
 
 int main(int argc, char * argv[])
 {
