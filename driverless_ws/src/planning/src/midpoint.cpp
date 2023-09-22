@@ -16,15 +16,17 @@ struct raceline_pt{
   double x,y,w_l,w_r;
 };
 
+// euf
 class MidpointNode : public rclcpp::Node
 {
   private:
-    void lap_callback(const std_msgs::msg::Int8::SharedPtr msg) 
+    void lap_callback(const std_msgs::msg::Int8 msg) 
     {
       lap=msg->data;
     }
 
-    void cones_callback(const interfaces::msg::ConeList::SharedPtr msg) const
+    void cones_callback(const eufs_msgs::msg::ConeList msg) const
+    eufs_msgs__msg__ConeArray;
     { 
       if (lap>1) return;
 
@@ -85,11 +87,11 @@ class MidpointNode : public rclcpp::Node
       // }
 
 
-      // auto message  = interfaces::msg::OptimizerPoints();
+      // auto message  = eufs_msgs::msg::OptimizerPoints();
       // message.x = rcl_pt_x;
       // message.y = rcl_pt_y;
       // message.wl = rcl_pt_wl;
-      // message.wr = rcl_pt_wr;
+    // message.wr = rcl_pt_wr;
       // publisher_rcl_pt->publish(message);
 
     }
@@ -98,8 +100,8 @@ class MidpointNode : public rclcpp::Node
 
     perceptionsData perception_data;
 
-    rclcpp::Subscription<interfaces::msg::ConeList>::SharedPtr subscription_cones;
-    rclcpp::Subscription<std_msgs::msg::String>::SharedPtr subscription_lap_num;
+    rclcpp::Subscription<eufs_msgs::msg::ConeList>::SharedPtr subscription_cones;
+    // rclcpp::Subscription<std_msgs::msg::String>::SharedPtr subscription_lap_num;
     // rclcpp::Publisher<std_msgs::msg::String>::SharedPtr publisher_rcl_pt;
 
     int LOOKAHEAD_NEAR = 2;
@@ -117,7 +119,7 @@ class MidpointNode : public rclcpp::Node
     {
       subscription_cones = this->create_subscription<eufs_msgs::msg::ConeList>("/stereo_cones", 10, std::bind(&MidpointNode::cones_callback, this, _1));
       subscription_lap_num = this->create_subscription<std_msgs::msg::String>("/lap_num", 10, std::bind(&MidpointNode::lap_callback, this, _1));
-      // publisher_rcl_pt = this->create_publisher<interfaces::msg::Points>("/midpoint_points",10);
+      // publisher_rcl_pt = this->create_publisher<eufs_msgs::msg::Points>("/midpoint_points",10);
       //     rclcpp::TimerBase::SharedPtr  timer_ = this->create_wall_timer(
       // 500ms, std::bind(&MinimalPublisher::timer_callback, this));
       generator_mid = MidpointGenerator(10);
@@ -126,6 +128,8 @@ class MidpointNode : public rclcpp::Node
       // VIS LOOKAHEADS
     }
 };
+
+eufs
 
 int main(int argc, char * argv[])
 {
