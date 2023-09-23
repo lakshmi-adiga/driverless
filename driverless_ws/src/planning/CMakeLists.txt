@@ -17,7 +17,7 @@ find_package(geometry_msgs REQUIRED)
 find_package(eufs_msgs REQUIRED)
 find_package(GSL REQUIRED)
 
-add_executable(midpoint_test src/midpoint.cpp src/generator.cpp src/raceline/raceline.cpp)
+add_executable(midpoint_test src/midpoint.cpp src/generator.cpp src/raceline/spline.cpp)
 ament_target_dependencies(midpoint_test rclcpp std_msgs eufs_msgs geometry_msgs GSL)
 
 install(TARGETS

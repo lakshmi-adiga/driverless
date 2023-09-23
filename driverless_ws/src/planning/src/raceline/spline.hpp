@@ -10,8 +10,8 @@
 #include <tuple>
 
 
-#ifndef RACELINE
-#define RACELINE
+#ifndef SPLINE
+#define SPLINE
 
 const int prefered_degree = 3,overlap = 0;
 struct polynomial

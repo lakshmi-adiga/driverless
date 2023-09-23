@@ -12,7 +12,7 @@
 #include <numeric>
 #include <vector>
 
-#include "raceline.hpp"
+#include "spline.hpp"
 const float prev_progress_flag = -std::numeric_limits<float>::max();
 
 //Projection class for storing result from minimization and related data

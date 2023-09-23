@@ -18,6 +18,8 @@ struct raceline_pt{
   double x,y,w_l,w_r;
 };
 
+
+
 class MidpointNode : public rclcpp::Node
 {
   private:
@@ -35,6 +37,9 @@ class MidpointNode : public rclcpp::Node
     MidpointGenerator generator_mid;
     MidpointGenerator generator_left;
     MidpointGenerator generator_right;
+
+
+    
 
     void lap_callback(const std_msgs::msg::Int8::SharedPtr msg) 
     {
@@ -72,6 +77,8 @@ class MidpointNode : public rclcpp::Node
 
 
       // WILL BE USED WHEN OPTIMIZER STARTS
+
+
       std::vector<double> rcl_pt_x,rcl_pt_y;//,rcl_pt_wr, rcl_pt_wl;
       double x,y;//,wl,wr,rptr,lptr;
       eufs_msgs::msg::PointArray message  = eufs_msgs::msg::PointArray();

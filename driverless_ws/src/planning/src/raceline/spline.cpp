@@ -7,7 +7,7 @@
 #include <gsl/gsl_math.h>
 #include <gsl/gsl_integration.h>
 #include <vector>
-#include "raceline.hpp"
+#include "spline.hpp"
 // #include "random.h"
 
 polynomial poly(int deg = 3){

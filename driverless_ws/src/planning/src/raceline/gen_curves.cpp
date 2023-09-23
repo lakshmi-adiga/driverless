@@ -1,7 +1,7 @@
 #include <gsl/gsl_math.h>
 #include <math.h>
 #include <map>
-#include "raceline.hpp"
+#include "spline.hpp"
 
 #define STEP_THRESH = 10
 #define STEP_SPECIAL = 2
