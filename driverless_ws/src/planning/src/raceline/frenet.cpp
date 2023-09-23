@@ -1,15 +1,6 @@
-#include <gsl/gsl_blas.h>
-#include <gsl/gsl_errno.h>
-#include <gsl/gsl_min.h>
 
-#include <algorithm>
-#include <cassert>
-#include <limits>
-#include <numeric>
-#include <vector>
 
 #include "frenet.hpp"
-#include "raceline.hpp"
 
 gsl_matrix *mat_mul(gsl_matrix *A, gsl_matrix *B) {
   assert(A->size2 == B->size1);

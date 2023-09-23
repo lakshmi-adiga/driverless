@@ -2,8 +2,14 @@
 #define FRENET_H
 
 #include <gsl/gsl_vector.h>
+#include <gsl/gsl_blas.h>
+#include <gsl/gsl_errno.h>
+#include <gsl/gsl_min.h>
 
+#include <algorithm>
+#include <cassert>
 #include <limits>
+#include <numeric>
 #include <vector>
 
 #include "raceline.hpp"
