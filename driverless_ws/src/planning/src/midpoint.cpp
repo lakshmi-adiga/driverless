@@ -12,6 +12,11 @@
 // #include "frenet.hpp"
 // #include "runpy.hpp"
 
+
+//publish topic example
+//ros2 topic pub -1 /stereo_cones eufs_msgs/msg/ConeArray "{blue_cones: [{x: 1.0, y: 2.0, z: 3.0}]}"                                                       
+
+
 using std::placeholders::_1;
 #define DELTA 0.5
 struct raceline_pt{
@@ -48,6 +53,8 @@ class MidpointNode : public rclcpp::Node
 
     void cones_callback (const eufs_msgs::msg::ConeArray::SharedPtr msg)
     { 
+      RCLCPP_INFO(this->get_logger(), "Hello");
+      return;
       if (lap>1) return;
 
       if((msg->blue_cones.size()==0 || msg->yellow_cones.size()==0) && (msg->orange_cones.size()<2)){
