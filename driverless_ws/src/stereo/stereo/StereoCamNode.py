@@ -30,7 +30,7 @@ BEST_EFFORT_QOS_PROFILE = QoSProfile(reliability = QoSReliabilityPolicy.BEST_EFF
                          history = QoSHistoryPolicy.KEEP_LAST,
                          durability = QoSDurabilityPolicy.VOLATILE,
                          depth = 5)
-STEREO_OUT = '/stereo_cones'
+STEREO_OUT = 'stereo_cones'
 IMAGE_LEFT_OUT = '/zedsdk_left_color_image'
 IMAGE_RIGHT_OUT = '/zedsdk_right_color_image'
 DEPTH_OUT = '/zedsdk_depth_image'
@@ -63,17 +63,79 @@ class StereoCamera(Node):
                                                      qos_profile=BEST_EFFORT_QOS_PROFILE)
 
         
-
-        self.data_syncer = self.create_timer(1/frame_rate, self.inference)
-
-        self.zed = ZEDSDK()
-        self.zed.open()
+        self.left_subscriber = self.create_subscription(Image,
+                                                        IMAGE_LEFT_OUT,
+                                                        self.left_callback,
+                                                        qos_profile=BEST_EFFORT_QOS_PROFILE)
+        self.point_subscriber = self.create_subscription(Image,
+                                                         POINT_OUT,
+                                                         self.point_callback,
+                                                         qos_profile=BEST_EFFORT_QOS_PROFILE)
+        
+        self.timer = self.create_timer(0.1, self.timer_callback)
 
         self.bridge = CvBridge()
+
+        self.recent_left = None
+        self.recent_point = None
+        self.iter = 0
 
 
         print(f"model-device: {self.device}")
         print("done-init-node")
+
+    def left_callback(self, msg):
+        self.recent_left = self.bridge.imgmsg_to_cv2(msg, desired_encoding="passthrough")
+    
+    def point_callback(self, msg):
+        self.recent_point = self.bridge.imgmsg_to_cv2(msg, desired_encoding="32FC4")
+
+    def timer_callback(self):
+        # try displaying the image
+
+        if self.recent_left is None or self.recent_point is None:
+            return
+
+        s = time.time()
+
+        # left, right, depth, point = self.zed.grab_data()
+        left = self.recent_left
+        point = self.recent_point
+        blue_cones, yellow_cones, orange_cones = predict(self.model, left, point)
+
+        # convert the data and check that it is the same going and backwards
+        # have to extract out nan values that don't count to compare image values
+        # left_enc = self.bridge.cv2_to_imgmsg(left, encoding="passthrough")
+        # right_enc = self.bridge.cv2_to_imgmsg(right, encoding="passthrough")
+        # depth_enc = self.bridge.cv2_to_imgmsg(depth, encoding="passthrough")
+        # point_enc = self.bridge.cv2_to_imgmsg(point,encoding="32FC4")
+
+        # publish the data
+        # self.left_publisher.publish(left_enc)
+        # self.right_publisher.publish(right_enc)
+        # self.depth_publisher.publish(depth_enc)
+        # self.point_publisher.publish(point_enc)
+
+
+        # left_unenc = self.bridge.imgmsg_to_cv2(left_enc, desired_encoding="passthrough")
+        # point_unenc = self.bridge.imgmsg_to_cv2(point_enc, desired_encoding="32FC4")
+        # depth_unenc = self.bridge.imgmsg_to_cv2(depth_enc, desired_encoding="passthrough")
+
+        result = []
+        for i in range(len(blue_cones)):
+            c = blue_cones[i]
+            result.append([c[0], c[1], c[2]])
+        print(np.array(result))
+
+        cone_msg = ConeArray()
+        cone_msg.blue_cones = np2points(blue_cones)
+        cone_msg.yellow_cones = np2points(yellow_cones)
+        cone_msg.orange_cones = np2points(orange_cones)
+        self.prediction_publisher.publish(cone_msg)
+
+        t = time.time()
+        print(f"Stereo {self.iter:>4}: {1000 * (t - s):.3f}ms")
+        self.iter += 1
 
     def inference(self):
         # try displaying the image
@@ -91,15 +153,15 @@ class StereoCamera(Node):
         point_enc = self.bridge.cv2_to_imgmsg(point,encoding="32FC4")
 
         # publish the data
-        self.left_publisher.publish(left_enc)
-        self.right_publisher.publish(right_enc)
-        self.depth_publisher.publish(depth_enc)
-        self.point_publisher.publish(point_enc)
+        # self.left_publisher.publish(left_enc)
+        # self.right_publisher.publish(right_enc)
+        # self.depth_publisher.publish(depth_enc)
+        # self.point_publisher.publish(point_enc)
 
 
-        # left_unenc = self.bridge.imgmsg_to_cv2(left_enc, desired_encoding="passthrough")
-        # point_unenc = self.bridge.imgmsg_to_cv2(point_enc, desired_encoding="32FC4")
-        # depth_unenc = self.bridge.imgmsg_to_cv2(depth_enc, desired_encoding="passthrough")
+        left_unenc = self.bridge.imgmsg_to_cv2(left_enc, desired_encoding="passthrough")
+        point_unenc = self.bridge.imgmsg_to_cv2(point_enc, desired_encoding="32FC4")
+        depth_unenc = self.bridge.imgmsg_to_cv2(depth_enc, desired_encoding="passthrough")
 
         result = []
         for i in range(len(blue_cones)):

@@ -1,0 +1,1 @@
+tmux send 'source ~/Documents/driverless/driverless_ws/install/setup.bash && cd ~/Documents/rosbags && ros2 bag record -a' ENTER;                    

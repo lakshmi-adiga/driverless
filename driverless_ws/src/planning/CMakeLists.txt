@@ -25,9 +25,9 @@ ament_target_dependencies(midline rclcpp std_msgs eufs_msgs geometry_msgs GSL)
 add_executable(talker pub.cpp)
 ament_target_dependencies(talker rclcpp std_msgs)
 
-install(TARGETS
-  talker
-  DESTINATION lib/${PROJECT_NAME})
+# install(TARGETS
+#   talker
+#   DESTINATION lib/${PROJECT_NAME})
 
 add_executable(listener sub.cpp)
 ament_target_dependencies(listener rclcpp std_msgs)

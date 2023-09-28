@@ -20,7 +20,8 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'stereo_cones = stereo.StereoCamNode:main'
+            'stereo_cones = stereo.StereoCamNode:main',
+            'collection_node = stereo.DataCollectionNode:main'
         ],
     },
 )

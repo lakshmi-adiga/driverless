@@ -107,7 +107,7 @@ def predict(model, left_image_np, point_cloud_np, sim=False):
     left_img = left_image_np
     zed_pts = point_cloud_np
     # import pdb; pdb.set_trace()
-    print(np.mean(left_img), np.std(left_img))
+    # print(np.mean(left_img), np.std(left_img))
 
     pad = 5
 
