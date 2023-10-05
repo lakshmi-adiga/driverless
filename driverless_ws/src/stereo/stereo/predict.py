@@ -89,6 +89,7 @@ def get_cone_color(left_frame, box, padding=2):
 
 def visualizePredictions(image, boxes, predictions, window_name="left w/ predictions"):
     # displaay boxes
+    print("hellow here we go")
     for i, box in enumerate(boxes):
         _, _, depth_z, color = predictions[i]
         top_left = (int(box[0]), int(box[1]))

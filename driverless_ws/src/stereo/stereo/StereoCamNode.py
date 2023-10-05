@@ -30,7 +30,12 @@ def np2points(cones):
         arr.append(p)
     return arr
 
-BEST_EFFORT_QOS_PROFILE = QoSProfile(reliability = QoSReliabilityPolicy.RELIABLE,
+RELIABLE_QOS_PROFILE = QoSProfile(reliability = QoSReliabilityPolicy.RELIABLE,
+                         history = QoSHistoryPolicy.KEEP_LAST,
+                         durability = QoSDurabilityPolicy.VOLATILE,
+                         depth = 5)
+
+BEST_EFFORT_QOS_PROFILE = QoSProfile(reliability = QoSReliabilityPolicy.BEST_EFFORT,
                          history = QoSHistoryPolicy.KEEP_LAST,
                          durability = QoSDurabilityPolicy.VOLATILE,
                          depth = 5)
@@ -134,7 +139,7 @@ class StereoCamera(Node):
 
         self.prediction_publisher = self.create_publisher(msg_type=ConeArray,
                                                           topic=STEREO_OUT,
-                                                          qos_profile=BEST_EFFORT_QOS_PROFILE)
+                                                          qos_profile=RELIABLE_QOS_PROFILE)
         
         self.left_publisher = self.create_publisher(msg_type=Image,
                                                      topic=IMAGE_LEFT_OUT,
@@ -189,6 +194,7 @@ class StereoCamera(Node):
         lidar_vis.update_visualizer_window(self.lidar_win, arr)
 
     def left_callback(self, msg):
+        print("got new left image")
         self.recent_left = self.bridge.imgmsg_to_cv2(msg, desired_encoding="passthrough")
     
     def point_callback(self, msg):
@@ -196,8 +202,9 @@ class StereoCamera(Node):
 
     def timer_callback(self):
         # try displaying the image
-
+        print("yellow")
         if self.recent_left is None or self.recent_point is None:
+            print("urmom")
             return
 
         s = time.time()
@@ -236,11 +243,11 @@ class StereoCamera(Node):
         #     result.append([c[0], c[1], c[2]])
         # print(np.array(result))
 
-        # cone_msg = ConeArray()
-        # cone_msg.blue_cones = np2points(blue_cones)
-        # cone_msg.yellow_cones = np2points(yellow_cones)
-        # cone_msg.orange_cones = np2points(orange_cones)
-        # self.prediction_publisher.publish(cone_msg)
+        cone_msg = ConeArray()
+        cone_msg.blue_cones = np2points(blue_cones)
+        cone_msg.yellow_cones = np2points(yellow_cones)
+        cone_msg.orange_cones = np2points(orange_cones)
+        self.prediction_publisher.publish(cone_msg)
 
         t = time.time()
         print(f"Stereo {self.iter:>4}: {1000 * (t - s):.3f}ms")
