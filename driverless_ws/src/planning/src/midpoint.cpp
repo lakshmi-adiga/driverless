@@ -32,7 +32,7 @@ class MidpointNode : public rclcpp::Node
       "topic", 10, std::bind(&MidpointNode::topic_callback, this, _1));
 
       subscription_cones = this->create_subscription<eufs_msgs::msg::ConeArray>(
-        "stereo_cones", 10, std::bind(&MidpointNode::cones_callback, this, _1));
+        "/stereo_cones", 100, std::bind(&MidpointNode::cones_callback, this, _1));
       // subscription_cones.subscribe(this,"/stereo_cones"); //= this->create_subscription<eufs_msgs::msg::ConeArray>("/stereo_cones", 10, std::bind(&MidpointNode::cones_callback, this, _1));
 
       // subscription_lap_num = this->create_subscription<std_msgs::msg::String>("/lap_num", 10, std::bind(&MidpointNode::lap_callback, this, _1));

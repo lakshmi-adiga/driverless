@@ -16,7 +16,7 @@ class MinimalSubscriber(Node):
         self.subscription  # prevent unused variable warning
 
     def listener_callback(self, msg):
-        
+        pass
 
 
 def main(args=None):

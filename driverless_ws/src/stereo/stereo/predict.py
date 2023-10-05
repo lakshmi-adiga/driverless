@@ -95,7 +95,10 @@ def visualizePredictions(image, boxes, predictions, window_name="left w/ predict
         bottom_right = (int(box[2]), int(box[3]))
         c = CV2_COLORS[color]
         image = cv2.rectangle(image.copy(), top_left, bottom_right, c, 3)
-    cv2.imshow(window_name, image)
+    
+    shape = image.shape
+    img_resize = cv2.resize(image, (int(shape[1] * 0.6), int(shape[0] * 0.6)))
+    cv2.imshow(window_name, img_resize)
     cv2.waitKey(1)
     return
 
